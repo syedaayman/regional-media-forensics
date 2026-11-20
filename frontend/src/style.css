@@ -1,0 +1,73 @@
+:root {
+  font-family: "Segoe UI", sans-serif;
+  color: #17212b;
+  background: #f3f6f8;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.status-card {
+  width: min(100%, 520px);
+  padding: 36px;
+  border: 1px solid #dce4e9;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 12px 32px rgb(23 33 43 / 8%);
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: #526879;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0 0 24px;
+  font-size: 1.7rem;
+}
+
+.connection-status {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.connection-status.checking {
+  color: #526879;
+}
+
+.connection-status.connected {
+  color: #14733c;
+}
+
+.connection-status.disconnected,
+.error-message {
+  color: #a4262c;
+}
+
+.error-message {
+  overflow-wrap: anywhere;
+  font-size: 0.9rem;
+}
+
+.help-text {
+  margin: 20px 0 0;
+  color: #526879;
+  line-height: 1.5;
+}
