@@ -3,10 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from app.routers.video import router as video_router
+from app.routers.audio import router as audio_router
 
 app = FastAPI(title="Regional Media Forensics API")
 
 app.include_router(video_router)
+app.include_router(audio_router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -14,7 +16,7 @@ app.add_middleware(
         "http://localhost:5173",
         "http://127.0.0.1:5173",
     ],
-    allow_methods=["GET"],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 

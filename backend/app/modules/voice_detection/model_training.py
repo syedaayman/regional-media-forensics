@@ -10,11 +10,17 @@ from app.modules.voice_detection.dataset_loader import iter_audio_samples
 from app.modules.voice_detection.feature_extraction import extract_audio_features
 
 
+# Keep this feature order consistent throughout the project.
+FEATURE_NAMES = [
+    "rms",
+    "zero_crossing_rate",
+    "spectral_centroid",
+    "spectral_bandwidth",
+] + [f"mfcc_{i}" for i in range(1, 14)]
+
+
 def prepare_features(manifest_path, dataset_path):
-    """
-    Extract audio features, labels, and language names
-    from audio samples.
-    """
+    """Extract audio features, labels, and language names."""
 
     X = []
     y = []
@@ -23,16 +29,15 @@ def prepare_features(manifest_path, dataset_path):
     processed = 0
     skipped = 0
 
-    for sample in iter_audio_samples(
-        manifest_path,
-        dataset_path
-    ):
+    for sample in iter_audio_samples(manifest_path, dataset_path):
         try:
-            features = extract_audio_features(
-                sample["audio_bytes"]
-            )
+            features = extract_audio_features(sample["audio_bytes"])
 
-            X.append(list(features.values()))
+            # Check that the expected features are present.
+            if list(features.keys()) != FEATURE_NAMES:
+                raise ValueError("Audio feature names or order do not match.")
+
+            X.append([features[name] for name in FEATURE_NAMES])
             y.append(sample["label"])
             languages.append(sample["language"])
 
@@ -50,7 +55,7 @@ def prepare_features(manifest_path, dataset_path):
     print(f"Skipped recordings: {skipped}")
 
     return (
-        np.asarray(X),
+        np.asarray(X, dtype=float),
         np.asarray(y),
         np.asarray(languages)
     )
@@ -93,11 +98,15 @@ def train_voice_model():
     )
 
     if len(X_train) == 0 or len(X_val) == 0:
-        raise ValueError(
-            "Training or validation dataset is empty."
-        )
+        raise ValueError("Training or validation dataset is empty.")
 
-    # Train model
+    if X_train.shape[1] != len(FEATURE_NAMES):
+        raise ValueError("Unexpected training feature count.")
+
+    if X_val.shape[1] != len(FEATURE_NAMES):
+        raise ValueError("Unexpected validation feature count.")
+
+    # Train Random Forest
     print("\nTraining Random Forest model...")
 
     model = RandomForestClassifier(
@@ -116,14 +125,10 @@ def train_voice_model():
 
     predictions = model.predict(X_val)
 
-    accuracy = accuracy_score(
-        y_val,
-        predictions
-    )
+    accuracy = accuracy_score(y_val, predictions)
 
     print("\nVOICE DETECTION VALIDATION RESULTS")
     print("=" * 45)
-
     print(f"Validation Accuracy: {accuracy:.4f}")
 
     print("\nClassification Report:")
@@ -149,15 +154,9 @@ def train_voice_model():
         / "checkpoints"
     )
 
-    model_folder.mkdir(
-        parents=True,
-        exist_ok=True
-    )
+    model_folder.mkdir(parents=True, exist_ok=True)
 
-    model_path = (
-        model_folder
-        / "voice_detection_model.joblib"
-    )
+    model_path = model_folder / "voice_detection_model.joblib"
 
     joblib.dump(model, model_path)
 

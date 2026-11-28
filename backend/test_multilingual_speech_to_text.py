@@ -1,21 +1,39 @@
+from pathlib import Path
+
 from app.modules.voice_detection.multilingual_speech_to_text import (
-    multilingual_speech_to_text
+    get_multilingual_speech_to_text_service,
 )
 
-print("Multilingual speech-to-text test started.")
 
-audio_path = input("Enter the full audio file path: ")
+def main():
 
-with open(audio_path, "rb") as audio_file:
-    audio_bytes = audio_file.read()
+    print("Multilingual Kannada transcription test started.")
 
-print("\nTranscribing audio...")
+    audio_path = Path(
+        r"C:\Users\Mypc\Downloads\kannada2.wav"
+    )
 
-result = multilingual_speech_to_text.transcribe_audio(audio_bytes)
+    if not audio_path.exists():
+        print("Audio file not found:", audio_path)
+        return
 
-print("\n---------- RESULTS ----------")
-print("Detected language:", result["detected_language"])
-print("Language probability:", result["language_probability"])
-print("Transcript:", result["transcript"])
-print("Status:", result["status"])
-print("-----------------------------")
+    with open(audio_path, "rb") as audio_file:
+        audio_bytes = audio_file.read()
+
+    print("Transcribing Kannada audio...")
+
+    result = get_multilingual_speech_to_text_service().transcribe_audio(
+        audio_bytes,
+        language="kn"
+    )
+
+    print("\n---------- RESULTS ----------")
+    print("Detected language:", result["detected_language"])
+    print("Language probability:", result["language_probability"])
+    print("Transcript:", result["transcript"])
+    print("Status:", result["status"])
+    print("-----------------------------")
+
+
+if __name__ == "__main__":
+    main()

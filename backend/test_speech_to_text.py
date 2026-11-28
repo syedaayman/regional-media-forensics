@@ -1,26 +1,30 @@
 from app.modules.voice_detection.speech_to_text import (
-    speech_to_text_service
+    get_speech_to_text_service,
 )
 
-print("Kannada transcription test started.")
 
-audio_path = input("Enter the full audio file path: ")
+def run_kannada_transcription_smoke_test() -> None:
+    print("Kannada transcription test started.")
 
-with open(audio_path, "rb") as audio_file:
-    audio_bytes = audio_file.read()
+    audio_path = input("Enter the full audio file path: ")
 
-print("\nTranscribing Kannada audio...")
+    with open(audio_path, "rb") as audio_file:
+        audio_bytes = audio_file.read()
 
-result = speech_to_text_service.transcribe_audio(
-    audio_bytes,
-    language="kn"
-)
+    print("\nTranscribing Kannada audio...")
 
-print("\n---------- RESULTS ----------")
+    result = get_speech_to_text_service().transcribe_audio(
+        audio_bytes,
+        language="kn"
+    )
 
-print("Detected language:", result["detected_language"])
-print("Language name:", result["language_name"])
-print("Transcript:", result["transcript"])
-print("Status:", result["status"])
+    print("\n---------- RESULTS ----------")
+    print("Detected language:", result["detected_language"])
+    print("Language name:", result["language_name"])
+    print("Transcript:", result["transcript"])
+    print("Status:", result["status"])
+    print("-----------------------------")
 
-print("-----------------------------")
+
+if __name__ == "__main__":
+    run_kannada_transcription_smoke_test()
